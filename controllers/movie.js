@@ -53,3 +53,10 @@ module.exports.deleteMovie = (req, res, next) => {
     })
     .catch(next);
 };
+
+// получить все фильмы
+module.exports.getMovies = (req, res, next) => {
+  Movie.find({})
+    .then((films) => res.send(films))
+    .catch(next);
+};
