@@ -1,7 +1,6 @@
 const Movie = require('../models/movie');
 
 const NotFoundError = require('../errors/NotFoundError');
-const IntervalServerError = require('../errors/Unauthorized');
 const BadRequest = require('../errors/BadRequest');
 const Forbidden = require('../errors/Forbidden');
 
@@ -30,11 +29,9 @@ module.exports.createMovie = (req, res, next) => {
     .then((film) => res.send(film))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        throw new BadRequest({ message: 'Ошибка валидации' });
+        next(new BadRequest({ message: 'Ошибка валидации' }));
       }
-      throw new IntervalServerError({ message: 'Не удалось добавить фильм' });
-    })
-    .catch(next);
+    });
 };
 
 // удаляет фильм пользователя
@@ -42,16 +39,15 @@ module.exports.deleteMovie = (req, res, next) => {
   Movie.findById(req.params._id)
     .then((film) => {
       if (!film) {
-        throw new NotFoundError({ message: 'Невалидный id' });
+        next(new NotFoundError({ message: 'Фильм не найден' }));
       }
       if (film.owner.toString() !== req.user._id) {
-        throw new Forbidden({ message: 'Недостаточно прав для удаления этого фильма!' });
+        next(new Forbidden({ message: 'Недостаточно прав для удаления этого фильма!' }));
       }
       Movie.findByIdAndRemove(req.params._id)
         .then((userFilm) => res.send(userFilm))
         .catch(next);
-    })
-    .catch(next);
+    });
 };
 
 // получить все фильмы

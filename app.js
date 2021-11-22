@@ -5,13 +5,13 @@ const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const { errors } = require('celebrate');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
-const { login, createUser } = require('./controllers/user');
-const auth = require('./middlewares/auth');
-const userRouter = require('./routes/user');
-const movieRouter = require('./routes/movie');
+const { DB_DEV, mongooseSettings } = require('./utils/constants');
 
-const { validateSignIn, validateSignUp } = require('./middlewares/validate');
+const router = require('./routes/index');
+
 const NotFoundError = require('./errors/NotFoundError');
+
+const { DATABASE, NODE_ENV } = process.env;
 
 const { PORT = 3000 } = process.env;
 const app = express();
@@ -22,21 +22,7 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(requestLogger);
 
-app.get('/', (req, res) => {
-  res.send(
-    `<html><body>
-    <p>Ответ на сигнал из далёкого космоса</p>
-    </body>
-    </html>`,
-  );
-});
-
-app.post('/signup', validateSignUp, createUser);
-app.post('/signin', validateSignIn, login);
-
-app.use(auth);
-app.use(userRouter);
-app.use(movieRouter);
+app.use(router);
 
 app.use(() => {
   throw new NotFoundError({ message: '404- Ресурс не найден' });
@@ -58,8 +44,6 @@ app.use((err, req, res, next) => {
   next();
 });
 
-mongoose.connect('mongodb://localhost:27017/bitfilmsdb', {
-  useNewUrlParser: true,
-});
+mongoose.connect(NODE_ENV === 'production' ? DATABASE : DB_DEV, mongooseSettings);
 
 app.listen(PORT);
