@@ -19,8 +19,8 @@ const app = express();
 app.use(cors({
   credentials: true,
   origin: [
-    'https://movies-search.nomoredomains.rocks/',
-    'http://movies-search.nomoredomains.rocks/',
+    'https://movies-search.nomoredomains.rocks',
+    'http://movies-search.nomoredomains.rocks',
     'https://api.movies-search.nomoredomains.rocks',
     'http://api.movies-search.nomoredomains.rocks',
     'http://localhost:3000',
