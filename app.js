@@ -16,7 +16,16 @@ const { DATABASE, NODE_ENV } = process.env;
 const { PORT = 3000 } = process.env;
 const app = express();
 
-app.use(cors());
+app.use(cors({
+  credentials: true,
+  origin: [
+    'https://movies-search.nomoredomains.rocks/',
+    'http://movies-search.nomoredomains.rocks/',
+    'https://api.movies-search.nomoredomains.rocks',
+    'http://api.movies-search.nomoredomains.rocks',
+    'http://localhost:3000',
+  ],
+}));
 
 app.use(cookieParser());
 app.use(express.json());
